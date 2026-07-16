@@ -1,0 +1,1 @@
+This repository aims to predict Fantasy Premier League (FPL) points for players.
