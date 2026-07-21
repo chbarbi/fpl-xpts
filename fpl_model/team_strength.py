@@ -30,16 +30,20 @@ def compute_team_strength(big5_xg_path, season: str) -> pd.DataFrame:
     """
     df = pd.read_csv(big5_xg_path)
 
-    mean_xG = df['xG'].mean()
-    mean_xGA = df['xGA'].mean()
+    # Per-league baselines: each row gets its OWN league's mean xG/xGA.
+    # transform() returns a Series aligned to df's rows (same length),
+    # so every team is scored against the league it actually plays in.
+    league_mean_xG  = df.groupby('League')['xG'].transform('mean')
+    league_mean_xGA = df.groupby('League')['xGA'].transform('mean')
 
-    df['attack_score'] = 50 + 50 * np.log(df['xG'] / mean_xG)
-    df['defense_score'] = 100 - (50 + 50 * np.log(df['xGA'] / mean_xGA))  # invert so higher = better defense
-
+    df['attack_score']  = 50 + 50 * np.log(df['xG']  / league_mean_xG)
+    df['defense_score'] = 100 - (50 + 50 * np.log(df['xGA'] / league_mean_xGA))
+    #                     ^--- invert: higher xGA = weaker defence, we flip it
+    
     pl = df[(df['League'] == 'Premier League') & (df['Season'] == season)].copy()
     if pl.empty:
         available = df['Season'].unique().tolist()
-        raise ValueError("No Premier League data for season %d. Available seasons: %s", season, available)
+        raise ValueError(f"No Premier League data for season {season}. Available seasons: {available}")
     
     # Extract Home / Away from team_id (format: "Arsenal_Home_202526")
     pl['home_away'] = pl['team_id'].str.extract(r'_(Home|Away)_')
