@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Bootstrap:
-    """ Parsed bootstrap-static data and lookups derived from it. 
-        Bundles the reference tables and id→name maps that the rest of the pipeline needs,
-        so functions can accept one `Bootstrap` instead of four loose dicts.
+    """ 
+    Parsed bootstrap-static data and lookups derived from it. 
+    Bundles the reference tables and id→name maps that the rest of the pipeline needs,
+    so functions can accept one `Bootstrap` instead of four loose dicts.
     """
     teams: pd.DataFrame
     positions: pd.DataFrame
