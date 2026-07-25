@@ -10,11 +10,11 @@ from fpl_model.config import N_PRIOR
 logger = logging.getLogger(__name__)
 
 _RATE_COLS = [
-    "goals_scored", "assists", "clean_sheets", "goals_conceded",
-    "saves", "yellow_cards", "red_cards",
-    "penalties_saved", "penalties_missed",
-    "cbi", "recoveries", "tackles", "defensive_contribution",
-    "xG", "xA", "xGC", "minutes",
+    'goals_scored', 'assists', 'clean_sheets', 'goals_conceded',
+    'saves', 'yellow_cards', 'red_cards',
+    'penalties_saved', 'penalties_missed',
+    'cbi', 'recoveries', 'tackles', 'defensive_contribution',
+    'xG', 'xA', 'xGC', 'minutes',
 ]
 
 def compute_player_rates(
@@ -37,17 +37,30 @@ def compute_player_rates(
     totals = performances.groupby('player_id')[_RATE_COLS].sum()
     totals['MP'] = performances[performances['minutes'] > 0].groupby('player_id').size()
 
+    # Appearances reaching 60+ minutes, per player (numerator for P(60+ | played))
+    played = performances[performances['minutes'] > 0]
+    totals['n_60plus'] = played[played['minutes'] >= 60].groupby('player_id').size()
+    totals['n_60plus'] = totals['n_60plus'].fillna(0).astype(int)
+
     pos_lookup = bootstrap.players.set_index('id')['position']
     totals['position'] = totals.index.map(pos_lookup)
 
     pos_totals = totals.groupby('position')[_RATE_COLS].sum()
+    pos_60plus = totals.groupby('position')['n_60plus'].sum()
     pos_mp = totals.groupby('position')['MP'].sum()
+    pos_prob60 = pos_60plus / pos_mp
     pos_rate = pos_totals.div(pos_mp, axis=0)
 
     rates = pd.DataFrame(index=totals.index)
     rates['position'] = totals['position']
     rates['MP'] = totals['MP']
     rates['avg_minutes'] = (totals['minutes'] / totals['MP']).round(1)
+
+    # Bayesian-shrunk P(60+ | played), same n_prior as the rate shrinkage
+    prior_60 = totals['position'].map(pos_prob60)
+    rates['prob_play_60'] = (
+        (totals['n_60plus'] + n_prior * prior_60) / (totals['MP'] + n_prior)
+    ).round(4)
 
     for col in _RATE_COLS:
         if col == 'minutes':
@@ -75,7 +88,7 @@ def build_team_strength_lookup(
     )
     missing = teams[teams['home_attack'].isna()]['name'].tolist()
     if missing:
-        logger.warning("No strength data for: %s. Add entries to FBREF_TO_FPL or check big5_xG_data.csv.", missing)
+        logger.warning('No strength data for: %s. Add entries to FBREF_TO_FPL or check big5_xG_data.csv.', missing)
     return teams.set_index('id')
 
 
@@ -100,13 +113,13 @@ def adjust_rates_for_opponent(
     row = rates_row.copy()
 
     if opp_team_id not in team_lookup.index:
-        logger.warning("opp_team_id %d not in team_lookup, no adjustment applied.", opp_team_id)
+        logger.warning('opp_team_id %d not in team_lookup, no adjustment applied.', opp_team_id)
         return row
 
     opp = team_lookup.loc[opp_team_id]
 
-    if opp[["home_attack", "away_attack", "home_defense", "away_defense"]].isna().any():
-        logger.warning("Strength data for opp_team_id %d is incomplete — no adjustment applied.", opp_team_id)
+    if opp[['home_attack', 'away_attack', 'home_defense', 'away_defense']].isna().any():
+        logger.warning('Strength data for opp_team_id %d is incomplete — no adjustment applied.', opp_team_id)
         return row
 
     # Opponent uses away context when player is home, and vice versa
