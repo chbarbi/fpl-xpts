@@ -31,9 +31,7 @@ def compute_xpts(row: pd.Series, mode: str = 'projected') -> dict:
 
     # ── Playing time ──────────────────────────────────────────────────────────
     if mode == 'projected':
-        avg_mins     = float(row.get('avg_minutes', 60))
-        prob_plays60 = 1.0 - poisson.cdf(59, mu=avg_mins)
-        # 1pt for playing at all (assumed starter), +1pt if 60+ mins
+        prob_plays60 = float(row.get('prob_play_60', 0.5))
         out['xPts_mins'] = round(
             s['play_u60'] + (s['play_60plus'] - s['play_u60']) * prob_plays60, 3
         )
