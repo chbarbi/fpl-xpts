@@ -1,8 +1,8 @@
 """xPts computation functions."""
 
 import pandas as pd
-import numpy as np
 
+from math import exp
 from scipy.stats import poisson
 
 from fpl_model.config import DEFCON_THRESHOLD, SCORING
@@ -47,11 +47,11 @@ def compute_xpts(row: pd.Series, mode: str = 'projected') -> dict:
     # Conditional on playing 60+ minutes (necessary condition for CS award).
     if mode == 'projected':
         lam_gc  = float(row.get('lam_goals_conceded', 0))
-        prob_cs = np.exp(-lam_gc) * prob_plays60
+        prob_cs = exp(-lam_gc) * prob_plays60
     else:
         # Use Opta xGC as the best estimate of expected goals conceded in that match
         lam_gc  = float(row.get('xGC', 0))
-        prob_cs = np.exp(-lam_gc) * int(float(row.get('minutes', 0)) >= 60)
+        prob_cs = exp(-lam_gc) * int(float(row.get('minutes', 0)) >= 60)
     out['xPts_cs'] = round(s['clean_sheet'] * prob_cs, 3)
 
     # ── Goals conceded (GKP/DEF penalty) ─────────────────────────────────────
