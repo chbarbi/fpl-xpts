@@ -34,6 +34,8 @@ def compute_player_rates(
 
     Returns: a DataFrame indexed by player_id.
     """
+    # Compute totals and appearances for each player
+    ### totals DataFrame is dependent on the minutes > 0 filter in performances.py
     totals = performances.groupby('player_id')[_RATE_COLS].sum()
     totals['MP'] = performances[performances['minutes'] > 0].groupby('player_id').size()
 
