@@ -19,7 +19,7 @@ _SUMMARY_FIELDS = {
     "goals_scored": 0, "assists": 0, "clean_sheets": 0, "goals_conceded": 0,
     "own_goals": 0, "penalties_saved": 0, "penalties_missed": 0,
     "yellow_cards": 0, "red_cards": 0, "saves": 0, "bonus": 0, "bps": 0,
-    "minutes": 0, "total_points": 0,
+    "minutes": 0, "total_points": 0, "starts": 0,
 }
 _SUMMARY_FLOATS = {
     "influence", "creativity", "threat", "ict_index",
