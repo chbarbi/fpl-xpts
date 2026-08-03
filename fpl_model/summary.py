@@ -120,7 +120,7 @@ def build_player_summary(
         'position', 'team', 'team_name', 'price_m',
         'selected_by_percent',
         'chance_of_playing_this_round', 'chance_of_playing_next_round',
-        'form', 'points_per_game',
+        'form', 'points_per_game', 'ep_next',
     ]].copy()
     base['chance_of_playing_this_round'] = base['chance_of_playing_this_round'].fillna(100.0)
     base['chance_of_playing_next_round'] = base['chance_of_playing_next_round'].fillna(100.0)
@@ -153,7 +153,7 @@ def build_player_summary(
                  'goals_conceded', 'saves', 'yellow_cards', 'red_cards',
                  'bonus', 'bps_total', 'total_xG', 'total_xA', 'total_xGC', 'total_points']
     p90_cols = ['goals_p90', 'assists_p90', 'xG_p90', 'xA_p90', 'xGC_p90', 'pts_p90']
-    fpl_cols = ['form', 'points_per_game']
+    fpl_cols = ['form', 'points_per_game', 'ep_next']
     mdl_cols = ['xForm5', 'xForm10', 'xPts_baseline', 'xVAPM', 'VAPM']
     proj_cols = gw_cols + (['xPts_next5_sum', 'xPts_next5_avg'] if gw_cols else [])
 
