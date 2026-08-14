@@ -7,3 +7,4 @@ data/raw/
 notebooks/fpl_xpts.ipynb
 *.log
 *test.py
+*.egg-info/
