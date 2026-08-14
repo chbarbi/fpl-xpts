@@ -8,3 +8,4 @@ notebooks/fpl_xpts.ipynb
 *.log
 *test.py
 *.egg-info/
+data/outputs/
