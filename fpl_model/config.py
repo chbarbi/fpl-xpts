@@ -10,15 +10,17 @@ OUTPUT_DIR   = DATA_DIR / 'outputs'
 
 BIG5_XG_PATH = RAW_DATA_DIR / 'big5_xG_data.csv'
 LOG_PATH     = PROJECT_ROOT / 'fpl_xpts.log'
+DB_PATH      = DATA_DIR / 'fpl.db'
 
 # ── FPL API  ────────────────────────────────────────────────────────────────────
 FPL_BASE = 'https://fantasy.premierleague.com/api/'
 API_DELAY = 0.5  # seconds between API calls
 
 # ── Season ──────────────────────────────────────────────────────────────────────
-CURRENT_SEASON = '2025-26'
+STRENGTH_SEASON = '2025-26' # for strength-score calculation when not enough matches in season yet
+CURRENT_SEASON = '2026-27'
 
-# ── Team name mapping / scoring rules / thresholds / prior ───────────────────────────
+# ── Team name mapping for xG data copied from FBRef (at the time) ───────────────
 FBREF_TO_FPL = {
     'Manchester City':  'Man City',
     'Manchester Utd':   'Man Utd',
@@ -104,3 +106,4 @@ DEFCON_THRESHOLD = {
 }
 
 N_PRIOR = 10
+COLD_START_GWS = 6

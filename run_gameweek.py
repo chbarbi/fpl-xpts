@@ -6,7 +6,7 @@ import logging
 
 import pandas as pd
 
-from fpl_model.config import BIG5_XG_PATH, CURRENT_SEASON, OUTPUT_DIR
+from fpl_model.config import BIG5_XG_PATH, STRENGTH_SEASON, OUTPUT_DIR
 from fpl_model.logging_setup import setup_logging
 from fpl_model.team_strength import compute_team_strength
 from fpl_model.bootstrap import build_bootstrap
@@ -16,6 +16,7 @@ from fpl_model.rates import compute_player_rates, build_team_strength_lookup
 from fpl_model.xpts import compute_xpts
 from fpl_model.predictions import build_future_predictions
 from fpl_model.summary import build_player_summary
+from fpl_model.database import init_db, save_predictions
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +51,10 @@ def main() -> None:
     setup_logging()
     logger.info("=== Pipeline start ===")
 
+    init_db()
+
     # Reference data
-    team_strength = compute_team_strength(BIG5_XG_PATH, CURRENT_SEASON)
+    team_strength = compute_team_strength(BIG5_XG_PATH, STRENGTH_SEASON)
     bootstrap = build_bootstrap()
     fixtures, next_gw = build_fixtures_df(bootstrap)
     team_lookup = build_team_strength_lookup(team_strength, bootstrap)
@@ -77,6 +80,9 @@ def main() -> None:
     player_summary = build_player_summary(
         bootstrap, performances, future_predictions, player_rates, next_gw, n_gws=N_GWS
     )
+
+    # Saving snapshot of predictions to SQLite database
+    save_predictions(future_predictions, next_gw)
 
     # Persist
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
