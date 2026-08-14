@@ -9,3 +9,4 @@ notebooks/fpl_xpts.ipynb
 *test.py
 *.egg-info/
 data/outputs/
+.pytest_cache/
