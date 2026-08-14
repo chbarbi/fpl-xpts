@@ -5,6 +5,7 @@ import pytest
 
 from fpl_model.rates import adjust_rates_for_opponent
 
+
 def _make_team_lookup():
     """ Minimal team_lookup with specified opponent (id=7). """
     return pd.DataFrame(
