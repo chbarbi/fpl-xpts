@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fpl-xpts-model"
+version = "0.1.0"
+description = "Fantasy Premier League expected-points model"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fpl_model*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
