@@ -42,6 +42,9 @@ def build_bootstrap() -> Bootstrap:
     players['team_name'] = players['team'].map(team_id_to_name)
     players['price_m'] = players['now_cost'] / 10
 
+    # Including FPL's own expected points for validation
+    players["ep_next"] = pd.to_numeric(players["ep_next"], errors="coerce")
+
     logger.info(
         "Bootstrap parsed: %d eligible players, %d teams.", len(players), len(teams)
     )
