@@ -9,17 +9,10 @@ from fpl_model.bootstrap import Bootstrap
 
 logger = logging.getLogger(__name__)
 
-def build_fixtures_df(bootstrap: Bootstrap) -> tuple[pd.DataFrame, int | None]:
-    """
-    Builds clean fixtures dataframe and determines the next gameweek
-
-    Double and blank gameweeks are handled naturally, either a team appears twice or once in the data for that gameweek.
-
-    Returns:
-        fixtures    - one row per fixture
-        next_gw     - GW number of the next unplayed gameweek, or None if season is complete.
-    """
-    raw = pd.DataFrame(fetch_fixtures())
+def _parse_fixtures(raw: list, bootstrap: Bootstrap) -> tuple[pd.DataFrame, int | None]:
+    """ Takes raw fixture data, returns (fixtures_df, next_gw). Separated from build_fixtures_df so it can be
+    tested without hitting the API."""
+    raw = pd.DataFrame(raw)
 
     raw['home_team'] = raw['team_h'].map(bootstrap.team_id_to_name)
     raw['away_team'] = raw['team_a'].map(bootstrap.team_id_to_name)
@@ -51,3 +44,8 @@ def build_fixtures_df(bootstrap: Bootstrap) -> tuple[pd.DataFrame, int | None]:
         len(fixtures), n_done, next_gw,
     )
     return fixtures, next_gw
+
+
+def build_fixtures_df(bootstrap: Bootstrap) -> tuple[pd.DataFrame, int | None]:
+    """Fetch fixtures and parse them."""
+    return _parse_fixtures(fetch_fixtures(), bootstrap)
