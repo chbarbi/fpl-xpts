@@ -138,7 +138,7 @@ def build_player_summary(
 
     # Value metrics
     ## TO BE FIXED LATER
-    next_gw_col = f'xPts_GW{next_gw}'
+    next_gw_col = f'xPts_gw{next_gw}'
     if next_gw is not None and next_gw_col in summary.columns:
         summary['xVAPM'] = ((summary[next_gw_col] - 2) / summary['price_m']).round(3)
     else:
