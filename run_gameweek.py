@@ -1,22 +1,20 @@
-"""
-End-to-end pipeline entry point: fetch -> model -> project -> export.
-"""
+"""End-to-end pipeline entry point: fetch -> model -> project -> export."""
 
 import logging
 
 import pandas as pd
 
-from fpl_model.config import BIG5_XG_PATH, STRENGTH_SEASON, OUTPUT_DIR
-from fpl_model.logging_setup import setup_logging
-from fpl_model.team_strength import compute_team_strength
 from fpl_model.bootstrap import build_bootstrap
-from fpl_model.fixtures import build_fixtures_df
-from fpl_model.performances import build_performances_df
-from fpl_model.rates import compute_player_rates, build_team_strength_lookup
-from fpl_model.xpts import compute_xpts
-from fpl_model.predictions import build_future_predictions
-from fpl_model.summary import build_player_summary
+from fpl_model.config import BIG5_XG_PATH, OUTPUT_DIR, STRENGTH_SEASON
 from fpl_model.database import init_db, save_predictions
+from fpl_model.fixtures import build_fixtures_df
+from fpl_model.logging_setup import setup_logging
+from fpl_model.performances import build_performances_df
+from fpl_model.predictions import build_future_predictions
+from fpl_model.rates import build_team_strength_lookup, compute_player_rates
+from fpl_model.summary import build_player_summary
+from fpl_model.team_strength import compute_team_strength
+from fpl_model.xpts import compute_xpts
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ def _apply_historic_xpts(performances: pd.DataFrame) -> pd.DataFrame:
     for window, col in [(5, 'xForm5'), (10, 'xForm10')]:
         performances[col] = (
             performances.groupby('player_id')['xPts']
-            .transform(lambda x: x.rolling(window, min_periods=1).mean().round(2))
+            .transform(lambda x: x.rolling(window, min_periods=1).mean().round(2))  # noqa: B023
         )
     return performances
 
