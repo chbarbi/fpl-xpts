@@ -94,7 +94,7 @@ def build_performances_df(bootstrap: Bootstrap, fixtures: pd.DataFrame) -> pd.Da
         logger.warning('No completed player history found, returning empty performances.')
         return df_summary
     
-    completed_gws = sorted(fixtures.loc[fixtures['fixtures'], 'event'].unique())
+    completed_gws = sorted(fixtures.loc[fixtures['finished'], 'event'].unique())
     df_live = _fetch_live_rows(completed_gws)
 
     """
@@ -112,7 +112,7 @@ def build_performances_df(bootstrap: Bootstrap, fixtures: pd.DataFrame) -> pd.Da
 
     meta = players[[
         'id', 'first_name', 'second_name', 'web_name',
-        'positions', 'team_name', 'team',
+        'position', 'team_name', 'team',
     ]]
     df = df.merge(meta, left_on='player_id', right_on='id', how='left')
     df['opponent_team'] = df['opponent_team_id'].map(bootstrap.team_id_to_name)
