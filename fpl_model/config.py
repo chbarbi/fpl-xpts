@@ -13,7 +13,7 @@ LOG_PATH     = PROJECT_ROOT / 'fpl_xpts.log'
 DB_PATH      = DATA_DIR / 'fpl.db'
 
 # ── FPL API  ────────────────────────────────────────────────────────────────────
-FPL_BASE = 'https://fantasy.premierleague.com/api/'
+FPL_BASE = 'https://fantasy.premierleague.com/api'
 API_DELAY = 0.5  # seconds between API calls
 
 # ── Season ──────────────────────────────────────────────────────────────────────
