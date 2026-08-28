@@ -115,14 +115,12 @@ def adjust_rates_for_opponent(
     row = rates_row.copy()
 
     if opp_team_id not in team_lookup.index:
-        logger.warning('opp_team_id %d not in team_lookup, no adjustment applied.', opp_team_id)
-        return row
+        return row # opp_team_id not in team_lookup, no adjustment applied.
 
     opp = team_lookup.loc[opp_team_id]
 
     if opp[['home_attack', 'away_attack', 'home_defense', 'away_defense']].isna().any():
-        logger.warning('Strength data for opp_team_id %d is incomplete — no adjustment applied.', opp_team_id)
-        return row
+        return row # strength data for this opponent is incomplete, no adjustment applied.
 
     # Opponent uses away context when player is home, and vice versa
     opp_att = opp['away_attack']   if is_home else opp['home_attack']
