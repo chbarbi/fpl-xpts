@@ -56,10 +56,16 @@ def save_predictions(future_predictions: pd.DataFrame, next_gw: int | None) -> N
     df['run_timestamp'] = datetime.now(timezone.utc).isoformat()
     df['is_cold_start'] = (df['gameweek'] <= COLD_START_GWS).astype(int)
 
+    df = df.rename(columns={'xPts': 'xpts', 'id': 'player_id'})
+
     cols = ['run_timestamp', 'gameweek', 'fixture_id', 'player_id', 'web_name',
             'position', 'team_name', 'opponent_team', 'is_home', 'price_m',
-            'xPts', 'ep_next', 'is_cold_start']
-    df = df[[c for c in cols if c in df.columns]].rename(columns={'xPts': 'xpts'})
+            'xpts', 'ep_next', 'is_cold_start']
+
+    df = df[[c for c in cols if c in df.columns]]
+
+    assert df['player_id'].notna().all()
+    assert df['xpts'].notna().all()
 
     with _connect() as conn:
         df.to_sql('predictions', conn, if_exists='append', index=False)
