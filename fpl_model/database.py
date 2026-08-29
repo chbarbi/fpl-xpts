@@ -27,10 +27,17 @@ CREATE TABLE IF NOT EXISTS predictions (
 );
 
 CREATE TABLE IF NOT EXISTS outcomes (
-    gameweek        INTEGER NOT NULL,
-    player_id       INTEGER NOT NULL,
-    minutes         INTEGER,
-    total_points    INTEGER,
+    gameweek                INTEGER NOT NULL,
+    player_id               INTEGER NOT NULL,
+    minutes                 INTEGER,
+    total_points            INTEGER,
+    goals_scored            INTEGER,
+    assists                 INTEGER,
+    clean_sheets            INTEGER,
+    goals_conceded          INTEGER,
+    saves                   INTEGER,
+    bonus                   INTEGER,
+    defensive_contribution  INTEGER,
     PRIMARY KEY (gameweek, player_id)
 );
 """
@@ -81,11 +88,15 @@ def save_outcomes(outcomes: pd.DataFrame) -> None:
         logger.info('No outcomes to save.')
         return
 
-    rows = outcomes[['gameweek', 'player_id', 'minutes', 'total_points']]
+    cols = ['gameweek', 'player_id', 'minutes', 'total_points', 'goals_scored',
+            'assists', 'clean_sheets', 'goals_conceded', 'saves', 'bonus',
+            'defensive_contribution']
+    rows = outcomes[cols]
+    placeholders = ', '.join(['?'] * len(cols))
+
     with _connect() as conn:
         conn.executemany(
-            "INSERT OR IGNORE INTO outcomes (gameweek, player_id, minutes, total_points) "
-            "VALUES (?, ?, ?, ?)",
+            f"INSERT OR IGNORE INTO outcomes ({', '.join(cols)}) VALUES ({placeholders})",
             rows.itertuples(index=False, name=None)
         )
     logger.info('Saved outcomes for %d player-GW rows.', len(rows))
