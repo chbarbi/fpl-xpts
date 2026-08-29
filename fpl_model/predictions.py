@@ -15,6 +15,7 @@ FUTURE_PRED_COLUMNS = [
     'team_name', 'price_m', 'gameweek', 'fixture_id',
     'opponent_team', 'is_home',
     'avg_minutes', 'MP', 'prob_play_60', 'chance_of_playing_next_round',
+    'ep_next',
     'xPts',
     'xPts_mins', 'xPts_cs', 'xPts_gc', 'xPts_goals', 'xPts_assists',
     'xPts_saves', 'xPts_yellows', 'xPts_reds',
@@ -71,7 +72,7 @@ def build_future_predictions(
     player_meta = bootstrap.players[[
         'id', 'web_name', 'first_name', 'second_name',
         'position', 'team', 'team_name', 'price_m',
-        'chance_of_playing_next_round',
+        'chance_of_playing_next_round', 'ep_next',
     ]].copy()
     player_meta['chance_of_playing_next_round'] = (
         player_meta['chance_of_playing_next_round'].fillna(100.0)
@@ -105,6 +106,9 @@ def build_future_predictions(
 
     pred_df = pred_df[[c for c in FUTURE_PRED_COLUMNS if c in pred_df.columns]]
     pred_df = pred_df.sort_values(['id', 'gameweek', 'fixture_id']).reset_index(drop=True)
+
+    # ep_next is only useful for next gameweek, so set to NaN elsewhere
+    pred_df.loc[pred_df["gameweek"] != next_gw, "ep_next"] = pd.NA
 
     logger.info("Future predictions built: %s", pred_df.shape)
     return pred_df
